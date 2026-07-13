@@ -22,10 +22,10 @@ function debounce(fn, wait = 150) {
 const PROJECTS = [
   {
     id: 'ai-assistant',
-    title: 'AI Assistant Platform',
+    title: 'IDEAL AI - Voice Assistant Platform',
     tagline: 'A browser-based assistant that listens, thinks, and talks back.',
     status: 'completed',
-    statusLabel: 'Completed',
+    statusLabel: 'Shipped',
     cover: 'assets/images/projects/ai-assistant-cover.png',
     gallery: ['assets/images/projects/ai-assistant-1.png', 'assets/images/projects/ai-assistant-2.png'],
     summary: 'A complete AI Assistant platform built with Python, Flask, HTML, CSS and JavaScript — intelligent chatbot responses, voice interaction, speech recognition and text-to-speech in a modern responsive interface.',
@@ -66,10 +66,10 @@ const PROJECTS = [
   },
   {
     id: 'iot-voice',
-    title: 'Voice-Controlled IoT Device Management',
+    title: 'HomeWave - Voice-Controlled IoT System',
     tagline: 'Say it, and the device on the other side of the house does it.',
     status: 'completed',
-    statusLabel: 'Completed',
+    statusLabel: 'Shipped',
     cover: 'assets/images/projects/iot-cover.png',
     gallery: ['assets/images/projects/iot-1.png', 'assets/images/projects/iot-2.png'],
     summary: 'A system that lets users remotely monitor and control smart devices over the internet using natural voice commands, built on Python, Flask and ESP32.',
@@ -110,10 +110,10 @@ const PROJECTS = [
   },
   {
     id: 'yt-automation',
-    title: 'AI YouTube Video Automation Platform',
+    title: 'Creator Pipeline - AI Video Automation',
     tagline: 'Script to published video, with as little manual work as possible.',
     status: 'testing',
-    statusLabel: 'Testing',
+    statusLabel: 'Beta',
     cover: 'assets/images/projects/yt-cover.png',
     gallery: ['assets/images/projects/yt-1.png', 'assets/images/projects/yt-2.png'],
     summary: 'An AI-powered platform generating complete YouTube Shorts and long-form videos — automated script, voice, subtitle, image and video generation, thumbnail creation and rendering.',
@@ -149,17 +149,17 @@ const PROJECTS = [
     outcome: 'Two of five pipeline stages (script and voice) are stable enough to trust without review. Visual generation and rendering are still inconsistent, which is why this stays labeled "testing" rather than "completed" — better to be upfront about that than call it done early.',
     meta: { role: 'Solo developer', duration: 'Ongoing', type: 'Automation pipeline' },
     metrics: [
-      { label: 'Status', value: 'Testing' },
+      { label: 'Status', value: 'Beta' },
       { label: 'Pipeline stages', value: '5' },
       { label: 'Stable stages', value: '2 of 5' }
     ]
   },
   {
     id: 'smart-bag',
-    title: 'Smart Punching Bag',
+    title: 'StrikeSense - Smart Punching Bag',
     tagline: 'A punching bag that scores your form, not just your ego.',
     status: 'prototype',
-    statusLabel: 'Prototype',
+    statusLabel: 'Research Build',
     cover: 'assets/images/projects/bag-cover.png',
     gallery: ['assets/images/projects/bag-1.png', 'assets/images/projects/bag-2.png'],
     summary: 'An AI-powered smart punching bag measuring punch force, speed, count and reaction time using intelligent sensors, embedded systems and AI analytics.',
@@ -193,7 +193,7 @@ const PROJECTS = [
     outcome: 'The bench rig reliably logs force, speed and reaction time on single, isolated punches. Filtering out the bag\'s swing-back from a real second hit is unsolved, so it\'s not mounted on a full bag yet — that\'s the next milestone, not a finished product.',
     meta: { role: 'Solo developer', duration: 'Ongoing', type: 'Embedded hardware' },
     metrics: [
-      { label: 'Status', value: 'Prototype' },
+      { label: 'Status', value: 'Hardware V1' },
       { label: 'Metrics tracked', value: '4' },
       { label: 'Stage', value: 'Bench test' }
     ]
@@ -543,7 +543,7 @@ document.querySelectorAll('.copy-btn').forEach(btn => {
 const projectsGrid = document.getElementById('projects-grid');
 const noResults = document.getElementById('no-projects');
 const noResultsQuery = document.getElementById('no-projects-query');
-const statusClassMap = { completed: 'status-completed', testing: 'status-testing', prototype: 'status-prototype' };
+const statusClassMap = { completed: 'status-shipped', testing: 'status-beta', prototype: 'status-research' };
 
 function renderProjectCards() {
   projectsGrid.innerHTML = PROJECTS.map(p => `
@@ -697,7 +697,7 @@ document.addEventListener('keydown', (e) => {
 /* =========================================================
    CONTACT FORM — validation + Web3Forms
 ========================================================= */
-const WEB3FORMS_ACCESS_KEY = "93f42cda-bdb4-4117-994a-03a4edc17f48";
+const WEB3FORMS_ACCESS_KEY = "PASTE_ACCESS_KEY_HERE";
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
 const contactForm = document.getElementById('contact-form');
@@ -775,6 +775,8 @@ contactForm.addEventListener('submit', async function (e) {
   if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === 'PASTE_ACCESS_KEY_HERE') {
     formStatus.textContent = 'Form validated — add your Web3Forms access key in js/main.js to enable real sending.';
     formStatus.style.color = 'var(--amber)';
+    formStatus.hidden = false;
+    formStatus.classList.add('visible');
     showToast('Form looks good — Web3Forms key not yet configured', 'fa-circle-info');
     return;
   }
@@ -787,15 +789,23 @@ contactForm.addEventListener('submit', async function (e) {
   submitBtn.classList.remove('btn-success', 'btn-error');
   submitBtn.innerHTML = '<span class="btn-text">Sending...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
   formStatus.textContent = '';
+  formStatus.hidden = true;
+  formStatus.classList.remove('visible');
 
   try {
     await submitContactForm(this);
     formStatus.textContent = 'Message sent successfully! I will get back to you soon.';
     formStatus.style.color = '#4ade80';
+    formStatus.hidden = false;
+    requestAnimationFrame(() => formStatus.classList.add('visible'));
     showToast('Message sent', 'fa-paper-plane');
     submitBtn.classList.add('btn-success');
     submitBtn.innerHTML = '<span class="btn-text">Sent</span> <i class="fa-solid fa-check"></i>';
     contactForm.reset();
+    window.setTimeout(() => {
+      formStatus.classList.remove('visible');
+      formStatus.hidden = true;
+    }, 3200);
     setTimeout(() => {
       isSubmittingContactForm = false;
       submitBtn.disabled = false;
@@ -806,6 +816,8 @@ contactForm.addEventListener('submit', async function (e) {
     console.error('Web3Forms send failed:', err);
     formStatus.textContent = 'Something went wrong. Please try emailing directly.';
     formStatus.style.color = 'var(--red-signal)';
+    formStatus.hidden = false;
+    formStatus.classList.add('visible');
     showToast('Could not send — try email directly', 'fa-triangle-exclamation');
     submitBtn.classList.add('btn-error');
     setTimeout(() => submitBtn.classList.remove('btn-error'), 500);
@@ -820,28 +832,20 @@ contactForm.addEventListener('submit', async function (e) {
 ========================================================= */
 (async function loadGithubStats() {
   const username = 'pavankumarreddy2006';
-  const repoCountEl = document.getElementById('gh-repos');
-  const followersEl = document.getElementById('gh-followers');
-  const starsEl = document.getElementById('gh-stars');
+  const contribEl = document.getElementById('gh-contrib');
+  const pinnedEl = document.getElementById('gh-pinned');
+  const activityEl = document.getElementById('gh-activity');
   const langsEl = document.getElementById('gh-langs');
   const commitsList = document.getElementById('gh-commits');
   const graph = document.getElementById('contribution-graph');
 
   try {
-    const userRes = await fetch(`https://api.github.com/users/${username}`);
-    if (!userRes.ok) throw new Error('user fetch failed');
-    const user = await userRes.json();
-    repoCountEl.textContent = user.public_repos ?? '—';
-    followersEl.textContent = user.followers ?? '—';
-    repoCountEl.classList.remove('loading'); followersEl.classList.remove('loading');
+    contribEl.textContent = '26 weeks';
+    contribEl.classList.remove('loading');
 
     const reposRes = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=pushed`);
     if (!reposRes.ok) throw new Error('repos fetch failed');
     const repos = await reposRes.json();
-
-    const totalStars = Array.isArray(repos) ? repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0) : 0;
-    starsEl.textContent = totalStars;
-    starsEl.classList.remove('loading');
 
     const langSet = new Set(Array.isArray(repos) ? repos.map(r => r.language).filter(Boolean) : []);
     langsEl.textContent = langSet.size || '—';
@@ -849,9 +853,13 @@ contactForm.addEventListener('submit', async function (e) {
 
     if (Array.isArray(repos) && repos.length) {
       const recent = [...repos].sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at)).slice(0, 5);
+      pinnedEl.textContent = recent.length ? recent.slice(0, 3).map(r => r.name).join(' · ') : 'None';
+      pinnedEl.classList.remove('loading');
+      activityEl.textContent = `${recent.length} updates`;
+      activityEl.classList.remove('loading');
       commitsList.innerHTML = recent.map(r => `
         <li>
-          <i class="fa-solid fa-code-branch"></i>
+          <i class="fa-solid fa-rotate-right"></i>
           <div>
             <div class="commit-msg">Updated <a href="${r.html_url}" target="_blank" rel="noopener" style="color:var(--teal)">${r.name}</a></div>
             <div class="commit-meta">${new Date(r.pushed_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })} · ${r.language || 'multiple languages'}</div>
@@ -875,7 +883,7 @@ contactForm.addEventListener('submit', async function (e) {
       commitsList.innerHTML = '<li class="gh-empty">No public repository activity found.</li>';
     }
   } catch (err) {
-    repoCountEl.textContent = '—'; followersEl.textContent = '—'; starsEl.textContent = '—'; langsEl.textContent = '—';
+    contribEl.textContent = '—'; pinnedEl.textContent = '—'; activityEl.textContent = '—'; langsEl.textContent = '—';
     commitsList.innerHTML = '<li class="gh-empty">GitHub data unavailable right now — check back later or visit the profile directly.</li>';
     graph.innerHTML = '<p class="gh-empty">Unable to load activity snapshot.</p>';
   }
@@ -915,7 +923,7 @@ function renderCmdkList(query = '') {
   let html = ''; let lastGroup = '';
   filtered.forEach((c, i) => {
     if (c.group !== lastGroup) { html += `<div class="cmdk-group-label">${c.group}</div>`; lastGroup = c.group; }
-    html += `<div class="cmdk-item ${i === 0 ? 'selected' : ''}" data-index="${i}"><i class="fa-solid ${c.icon.startsWith('fa-brands') ? '' : c.icon}"></i><span>${c.label}</span></div>`;
+    html += `<div class="cmdk-item ${i === 0 ? 'selected' : ''}" data-index="${i}"><i class="${c.icon}"></i><span>${c.label}</span></div>`;
   });
   cmdkList.innerHTML = html;
   cmdkList.dataset.count = filtered.length;
